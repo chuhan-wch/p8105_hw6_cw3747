@@ -50,11 +50,40 @@ homicide_clean =
   mutate(
     city_state = str_c(city, ", ", state),
     solved = if_else(disposition == "Closed by arrest", "yes", "no"),
-    victim_age = as.numeric(victim_age)
+    solved = factor(solved, levels = c("no", "yes")),
+    victim_age = if_else(victim_age == "Unknown",
+                         NA_real_, as.numeric(victim_age))
   ) |>
   filter(
     !city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", 
                        "Tulsa, AL"),
     victim_race %in% c("White", "Black")
   )
+```
+
+
+### baltimore and regression
+
+```{r}
+library(broom)
+
+baltimore =
+  homicide_clean |>
+  filter(city_state == "Baltimore, MD")
+
+fit_baltimore =                 ## the output of glm
+  glm(
+    solved ~ victim_age + victim_sex + victim_race,
+    data = baltimore,
+    family = binomial
+  )
+
+tidy_baltimore =
+  tidy(
+    fit_baltimore,
+    exponentiate = TRUE,
+    conf.int    = TRUE
+  )
+
+tidy_baltimore
 ```
