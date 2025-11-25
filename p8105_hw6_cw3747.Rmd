@@ -87,3 +87,40 @@ tidy_baltimore =
 
 tidy_baltimore
 ```
+
+### ORs and CIs for each city
+
+```{r}
+or_city =
+  homicide_clean |>
+  group_by(city_state) |>
+  nest() |>
+  mutate(
+    fit = map(
+      data,
+      ~ glm(
+          solved ~ victim_age + victim_sex + victim_race,
+          data   = .x,
+          family = binomial
+        )
+    ),
+    tidy_res = map(
+      fit,
+      ~ tidy(.x, exponentiate = TRUE, conf.int = TRUE)
+    )
+  ) |>
+  select(city_state, tidy_res) |>
+  unnest(tidy_res) |>
+  filter(term == "victim_sexMale") |>
+  select(
+    city_state,
+    or_male_vs_female = estimate,
+    CI_low  = conf.low,
+    CI_high = conf.high,
+    p_value = p.value
+  ) |> 
+  ungroup()
+
+or_city
+```
+
