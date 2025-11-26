@@ -204,3 +204,24 @@ boot_results =
   ) |>
   select(.id, r2, beta_ratio)
 ```
+
+
+### plots
+
+```{r}
+boot_results |>
+  ggplot(aes(x = r2)) +
+  geom_histogram(bins = 30)
+
+boot_results |>
+  ggplot(aes(x = beta_ratio)) +
+  geom_histogram(bins = 30)
+```
+
+Interpretation:
+
+For $R^2$, the bootstrap distribution is approximately symmetric and bell--shaped, with a single prominent mode around $0.94$. The resampled $R^2$ values are highly concentrated, mostly lying between about $0.93$ and $0.95$, indicating that the fitted multiple linear regression model consistently explains a large proportion 
+of the variability in $tmax$.
+
+For the ratio $\hat\beta_1 / \hat\beta_2$, the bootstrap distribution is unimodal but clearly right--skewed on the negative scale, with a peak near $-200$ and a longer tail extending toward more negative values (approximately down to about $-400$). This suggests greater variability and asymmetry in the sampling  distribution of the ratio of the two slope coefficients compared with $R^2$. 
+
