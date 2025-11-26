@@ -152,3 +152,55 @@ The plot displays the adjusted odds ratio for a homicide being solved when the v
 In most cities the point estimate is below 1, suggesting that cases with male victims generally have lower odds of being solved than cases with female victims, after adjustment for the other covariates.
 
 In several cities near the bottom of the plot (e.g., New York, Baton Rouge, Omaha), the 95% confidence intervals lie entirely below 1, indicating a statistically significant disadvantage for male victims. For many cities in the middle of the figure, the confidence intervals include 1, so we cannot rule out no difference between male and female victims. A few cities at the top have odds ratios above 1, but their intervals are wide, reflecting substantial uncertainty. Overall, the plot suggests both a tendency toward lower clearance for male victims and considerable variation across cities.
+
+
+## Problem 2
+
+### data import
+
+```{r}
+library(p8105.datasets)
+data("weather_df")
+
+janitor::clean_names(weather_df)
+```
+
+
+```{r}
+weather_clean =
+  weather_df |>
+  select(tmax, tmin, prcp) |>
+  drop_na()
+```
+
+```{r}
+library(modelr)
+library(broom)
+
+set.seed(1)
+
+boot_results = 
+  weather_clean |>
+  modelr::bootstrap(n = 5000) |>
+  mutate(
+    model = map(
+      strap,
+      ~ lm(tmax ~ tmin + prcp, data = .x)
+    ),
+    model_sum = map(model, glance),
+    coef_tbl = map(model, tidy)
+  ) |>
+  mutate(
+    r2 = map_dbl(model_sum, "r.squared"),
+    beta_ratio = map_dbl(coef_tbl, ~ {
+      b1 = .x |>
+        filter(term == "tmin") |>
+        pull(estimate)
+      b2 = .x %>% 
+        filter(term == "prcp") |>
+        pull(estimate) 
+      b1 / b2
+    })
+  ) |>
+  select(.id, r2, beta_ratio)
+```
