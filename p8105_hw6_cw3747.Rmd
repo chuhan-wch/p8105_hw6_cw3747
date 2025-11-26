@@ -243,3 +243,37 @@ boot_ci
 The 95\% bootstrap confidence interval for $R^2$ is $\left[\,`r round(boot_ci$r2_low, 3)`,\ `r round(boot_ci$r2_high, 3)`\right]$.
 
 The 95\% bootstrap confidence interval for $\hat\beta_1 / \hat\beta_2$ is $\left[\,`r round(boot_ci$br_low, 2)`,\ `r round(boot_ci$br_high, 2)`\right]$.
+
+
+## Problem3
+
+### data import
+
+```{r}
+bw = read.csv("./birthweight.csv") |>
+  janitor::clean_names()
+```
+
+```{r}
+bw |> 
+  dplyr::glimpse()
+  summary(bw)
+  colSums(is.na(bw))
+```
+
+```{r}
+bw =
+  bw |>
+  dplyr::mutate(
+    babysex = factor(babysex, levels = c(1, 2),
+                     labels = c("male", "female")),
+    frace  = factor(frace,  levels = c(1,2,3,4,8,9),
+                    labels = c("white","black","asian",
+                               "puerto_rican","other","unknown")),
+    mrace  = factor(mrace,  levels = c(1,2,3,4,8),
+                    labels = c("white","black","asian",
+                               "puerto_rican","other")),
+    malform = factor(malform, levels = c(0,1),
+                     labels = c("absent","present"))
+  )
+```
