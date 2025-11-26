@@ -277,3 +277,29 @@ bw =
                      labels = c("absent","present"))
   )
 ```
+
+### MLR
+
+```{r}
+mlr_bw =
+  lm(
+    bwt ~ gaweeks + ppbmi + wtgain + smoken + babysex + mrace + parity + 
+      pnumlbw + pnumsga, 
+    data = bw
+  )
+
+mlr_bw
+
+summary(mlr_bw)
+```
+
+\[
+\widehat{\text{bwt}} =
+553.6 + 54.4\,\text{gaweeks} + 20.1\,\text{ppbmi} + 9.8\,\text{wtgain} - 11.5\,\text{smoken} - 85.7\,\mathbb{I}(\text{babysex}=\text{female}) - 297.5\,\mathbb{I}(\text{mrace}=\text{black}) - 126.6\,\mathbb{I}(\text{mrace}=\text{asian}) - 186.3\,\mathbb{I}(\text{mrace}=\text{puerto\_rican}) + 102.5\,\text{parity}
+\]
+
+We fitted a multiple linear regression model with birthweight in grams as the outcome and gestational age, maternal pre-pregnancy BMI, maternal weight gain during pregnancy, daily number of cigarettes smoked, infant sex, maternal race, and parity as predictors.
+
+After adjustment for all other variables in the model, birthweight is positively associated with gestational age, maternal BMI, weight gain, and parity, and negatively associated with cigarette smoking. Infants born to mothers who are Black or Puerto Rican tend to have lower birthweights compared with those born to White mothers, and female infants tend to weigh less than male infants. Overall, the model captures biologically plausible relationships between fetal growth and maternal characteristics, smoking behavior, and sociodemographic factors.
+
+
